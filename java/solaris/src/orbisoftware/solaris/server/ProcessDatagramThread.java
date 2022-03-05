@@ -34,67 +34,63 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import java.beans.PropertyChangeListener;
 
-public class ProcessDatagramThread extends Thread implements
-      PropertyChangeListener {
+public class ProcessDatagramThread extends Thread implements PropertyChangeListener {
 
-   private BlockingQueue<DatagramPacket> queue = new LinkedBlockingQueue<DatagramPacket>();
-   private boolean shutdown = false;
-   
-   public void propertyChange(PropertyChangeEvent evt) {
+	private BlockingQueue<DatagramPacket> queue = new LinkedBlockingQueue<DatagramPacket>();
+	private boolean shutdown = false;
 
-      byte[] buffer = new byte[((DatagramPacket) evt.getNewValue()).getLength()];
+	public void propertyChange(PropertyChangeEvent evt) {
 
-      if (evt.getPropertyName().toString().equals("datagramReceived")) {
+		byte[] buffer = new byte[((DatagramPacket) evt.getNewValue()).getLength()];
 
-         synchronized (queue) {
+		if (evt.getPropertyName().toString().equals("datagramReceived")) {
 
-            // Make a copy of the datagram packet, as the referenced object
-            // is owned by the other thread.
-            System.arraycopy(((DatagramPacket) evt.getNewValue()).getData(), 0,
-                  buffer, 0, buffer.length);
+			synchronized (queue) {
 
-            DatagramPacket receivedPacket = new DatagramPacket(buffer,
-                  buffer.length);
+				// Make a copy of the datagram packet, as the referenced object
+				// is owned by the other thread.
+				System.arraycopy(((DatagramPacket) evt.getNewValue()).getData(), 0, buffer, 0, buffer.length);
 
-            queue.add(receivedPacket);
-            queue.notify();
-         }
-      }
-   }
+				DatagramPacket receivedPacket = new DatagramPacket(buffer, buffer.length);
 
-   public List<DatagramPacket> getQueuedData() {
-	   
-	   List<DatagramPacket> datagramList = new LinkedList<DatagramPacket>();
-	   
-	   synchronized (queue) {
-		   queue.drainTo(datagramList);
-	    }
-	   
-	   return datagramList;
-   }
-   
+				queue.add(receivedPacket);
+				queue.notify();
+			}
+		}
+	}
+
+	public List<DatagramPacket> getQueuedData() {
+
+		List<DatagramPacket> datagramList = new LinkedList<DatagramPacket>();
+
+		synchronized (queue) {
+			queue.drainTo(datagramList);
+		}
+
+		return datagramList;
+	}
+
 	public void shutdownReq() {
 		shutdown = true;
 	}
-	
-   public void run() {
 
-      ReceiveDatagramThread receiveDatagramThread = new ReceiveDatagramThread(
-    		  SharedData.getInstance().xmlMap.get("MulticastIP"), 
-    		  Integer.parseInt(SharedData.getInstance().xmlMap.get("MulticastPort")));
+	public void run() {
 
-      receiveDatagramThread.getPropertyChangeSupport()
-            .addPropertyChangeListener(this);
-      receiveDatagramThread.start();
+		ReceiveDatagramThread receiveDatagramThread = new ReceiveDatagramThread(
+				SharedData.getInstance().xmlMap.get("MulticastIP"),
+				Integer.parseInt(SharedData.getInstance().xmlMap.get("MulticastPort")));
 
-      while (!shutdown) {
+		receiveDatagramThread.getPropertyChangeSupport().addPropertyChangeListener(this);
+		receiveDatagramThread.start();
 
-    	  try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		while (!shutdown) {
+
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
-      }   
-      receiveDatagramThread.shutdownReq();
-   }
+		receiveDatagramThread.shutdownReq();
+	}
 }

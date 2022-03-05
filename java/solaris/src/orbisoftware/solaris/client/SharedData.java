@@ -29,7 +29,7 @@ import java.util.HashMap;
 public class SharedData {
 
 	public HashMap<String, String> xmlMap = new HashMap<>();
-	
+
 	private static SharedData instance;
 
 	private SharedData() {

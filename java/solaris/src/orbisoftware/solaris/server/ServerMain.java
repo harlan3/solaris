@@ -42,7 +42,7 @@ public class ServerMain {
 
 	private String fileName = "settings.xml";
 	private boolean shutdown = false;
-	
+
 	public ServerMain() {
 
 		try {
@@ -98,20 +98,20 @@ public class ServerMain {
 
 		ProcessDatagramThread processDatagramThread = new ProcessDatagramThread();
 		processDatagramThread.start();
-		
+
 		Runtime.getRuntime().addShutdownHook(new Thread() {
-	        public void run() {
-	            try {
-	                Thread.sleep(200);
-	                System.out.println("Shutting down ...");
-	                serverMain.shutdown = true;
-	                processDatagramThread.shutdownReq();
-	            } catch (InterruptedException e) {
-	                Thread.currentThread().interrupt();
-	                e.printStackTrace();
-	            }
-	        }
-	    });
+			public void run() {
+				try {
+					Thread.sleep(200);
+					System.out.println("Shutting down ...");
+					serverMain.shutdown = true;
+					processDatagramThread.shutdownReq();
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					e.printStackTrace();
+				}
+			}
+		});
 
 		while (!serverMain.shutdown) {
 
@@ -123,26 +123,26 @@ public class ServerMain {
 
 				String json = new String(packet.getData(), packet.getOffset(), packet.getLength());
 				System.out.println("contents: " + json);
-				
+
 				JSONObject jsonObject = new JSONObject(json);
-				
-		        System.out.println("eventName = " + jsonObject.getString("eventName"));
-		        System.out.println("chatham = " + jsonObject.getByte("chatham"));
-		        System.out.println("waitaha = " + jsonObject.getShort("waitaha"));
-		        System.out.println("king = " + jsonObject.getInt("king"));
-		        System.out.println("emperor = " + jsonObject.getLong("emperor"));
-		        System.out.println("chinstrap = " + jsonObject.getFloat("chinstrap"));
-		        System.out.println("gentoo = " + jsonObject.getDouble("gentoo"));
-		        System.out.println("magellanic = " + jsonObject.getBoolean("magellanic"));		        
-		        System.out.println("humboldt = " + jsonObject.getString("humboldt"));	
-		        
-		        try {
-			        byte[] decodedBytes = Base64.getDecoder().decode(jsonObject.getString("macaroni"));
+
+				System.out.println("eventName = " + jsonObject.getString("eventName"));
+				System.out.println("chatham = " + jsonObject.getByte("chatham"));
+				System.out.println("waitaha = " + jsonObject.getShort("waitaha"));
+				System.out.println("king = " + jsonObject.getInt("king"));
+				System.out.println("emperor = " + jsonObject.getLong("emperor"));
+				System.out.println("chinstrap = " + jsonObject.getFloat("chinstrap"));
+				System.out.println("gentoo = " + jsonObject.getDouble("gentoo"));
+				System.out.println("magellanic = " + jsonObject.getBoolean("magellanic"));
+				System.out.println("humboldt = " + jsonObject.getString("humboldt"));
+
+				try {
+					byte[] decodedBytes = Base64.getDecoder().decode(jsonObject.getString("macaroni"));
 					System.out.println("macaroni = " + new String(decodedBytes, "UTF-8"));
 				} catch (UnsupportedEncodingException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} 
+				}
 			}
 
 			try {

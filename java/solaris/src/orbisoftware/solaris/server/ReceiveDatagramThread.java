@@ -38,14 +38,14 @@ public class ReceiveDatagramThread extends Thread {
 	private int multicastPort = 0;
 
 	public ReceiveDatagramThread(String ip, int port) {
-		
+
 		propertyChangeSupport = new PropertyChangeSupport(this);
 		multicastIP = ip;
 		multicastPort = port;
 	}
 
 	public PropertyChangeSupport getPropertyChangeSupport() {
-		
+
 		return propertyChangeSupport;
 	}
 
@@ -69,13 +69,13 @@ public class ReceiveDatagramThread extends Thread {
 	}
 
 	public void shutdownReq() {
-		
+
 		shutdown = true;
 	}
 
 	@Override
 	public void run() {
-		
+
 		try {
 			receiveUDPMessage();
 		} catch (IOException ex) {
