@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <multicastAddress>231.0.0.0</multicastAddress>
+    <multicastPort>2345</multicastPort>
+</config>
