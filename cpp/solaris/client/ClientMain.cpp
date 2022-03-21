@@ -64,7 +64,7 @@ ClientMain::ClientMain()
     SharedData::getInstance()->appConfig.loadXml("config.xml");
 }
 
-int main(int argc, char* argv[]) 
+int main1(int argc, char* argv[])
 {
 
 #ifdef WIN32
