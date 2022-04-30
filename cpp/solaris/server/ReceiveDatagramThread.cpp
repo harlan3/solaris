@@ -59,8 +59,9 @@ void ReceiveDatagramThread::processRcvCallback(char* data, int numBytes)
 {
 
     JSONPacket packet;
-    strcpy(packet.data, data);
-    packet.length = numBytes;
+    memcpy(packet.data, data, numBytes);
+    packet.data[numBytes] = 0;
+    packet.length = numBytes+1;
 
     queue.push(packet);
 }
