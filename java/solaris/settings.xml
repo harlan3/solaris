@@ -13,12 +13,12 @@
    <setting>
       <!-- Application setting -->
       <name>MulticastDeviceAddress</name>
-      <value>10.10.30.10</value>
+      <value>192.168.4.177</value>
    </setting>
    <setting>
       <!-- Application setting -->
       <name>BroadcastAddress</name>
-      <value>10.10.30.10</value>
+      <value>192.168.4.177</value>
    </setting>
    <setting>
       <!-- Application setting -->
