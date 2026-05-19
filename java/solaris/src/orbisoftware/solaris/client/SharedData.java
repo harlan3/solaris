@@ -28,18 +28,24 @@ import java.util.HashMap;
 
 public class SharedData {
 
-	public HashMap<String, String> xmlMap = new HashMap<>();
+	public HashMap<String, String> xmlMap;
 
-	private static SharedData instance;
+	private static SharedData instance = null;
 
 	private SharedData() {
+		
+		xmlMap = new HashMap<>();
 	}
 
-	public static SharedData getInstance() {
-
-		if (instance == null) {
-			instance = new SharedData();
-		}
-		return instance;
-	}
+    public static SharedData getInstance() {
+        if (instance == null) { // First check (no locking)
+            synchronized (SharedData.class) {
+                if (instance == null) { // Second check (locked)
+                    instance = new SharedData();
+                    System.out.println("Created new SharedData()");
+                }
+            }
+        }
+        return instance;
+    }
 }

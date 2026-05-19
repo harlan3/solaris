@@ -27,59 +27,103 @@ package orbisoftware.solaris.server;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
+import java.net.NetworkInterface;
 
 public class ReceiveDatagramThread extends Thread {
 
-	private PropertyChangeSupport propertyChangeSupport;
-	private boolean shutdown = false;
-	private String multicastIP = "";
-	private int multicastPort = 0;
+	   private final int MAX_PACKET_SIZE = 1500;
+	   private static DatagramSocket datagramSocket = null;
+	   private static MulticastSocket multicastSocket = null;
+	   private PropertyChangeSupport propertyChangeSupport;
+	   private boolean shutdown = false;
+	   
+	   private int portNumber = 0;
+	   private boolean threadIsActive = false;
+	   private boolean useMulticast = false;
+	      
+	   public ReceiveDatagramThread() {
+	      propertyChangeSupport = new PropertyChangeSupport(this);
+	   }
 
-	public ReceiveDatagramThread(String ip, int port) {
+	   public PropertyChangeSupport getPropertyChangeSupport() {
+	      return propertyChangeSupport;
+	   }
 
-		propertyChangeSupport = new PropertyChangeSupport(this);
-		multicastIP = ip;
-		multicastPort = port;
-	}
+	   public void setThreadIsActive(boolean threadIsActive) {
+	      this.threadIsActive = threadIsActive;
+	   }
 
-	public PropertyChangeSupport getPropertyChangeSupport() {
+	   private void initSocket() {
 
-		return propertyChangeSupport;
-	}
+	      useMulticast = Boolean.parseBoolean(
+	            SharedData.getInstance().xmlMap.get("UseMulticast"));
+	      portNumber = Integer
+	            .parseInt(SharedData.getInstance().xmlMap.get("PortValue"));
 
-	private void receiveUDPMessage() throws IOException {
+	      if (useMulticast) {
 
-		byte[] buffer = new byte[1024];
-		MulticastSocket socket = new MulticastSocket(multicastPort);
-		InetAddress group = InetAddress.getByName(multicastIP);
-		socket.joinGroup(group);
+	         try {
 
-		while (!shutdown) {
+	            InetAddress multicastAddress = InetAddress.getByName(SharedData.getInstance().xmlMap.get("MulticastAddress"));
+	            InetAddress multicastDeviceAddress = InetAddress.getByName(SharedData.getInstance().xmlMap.get("MulticastDeviceAddress"));
+	            multicastSocket = new MulticastSocket(portNumber);
 
-			DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-			socket.receive(packet);
+	            // Explicitly join the group on the specified interface
+	            NetworkInterface netIf = NetworkInterface.getByInetAddress(multicastDeviceAddress);
+	            multicastSocket.setNetworkInterface(netIf);
+	            multicastSocket.joinGroup(new InetSocketAddress(multicastAddress, portNumber), netIf);
+	         } catch (Exception e) {
+	            e.printStackTrace();
+	         }
 
-			propertyChangeSupport.firePropertyChange("datagramReceived", 0, packet);
+	      } else {
+
+	         try {
+	            datagramSocket = new DatagramSocket(portNumber);
+	         } catch (Exception e) {
+	            e.printStackTrace();
+	         }
+	      }
+	   }
+
+		public void shutdownReq() {
+
+			shutdown = true;
 		}
+		
+	   public void run() {
 
-		socket.leaveGroup(group);
-		socket.close();
+	      byte[] buffer = new byte[MAX_PACKET_SIZE];
+
+	      initSocket();
+
+	      while (true) {
+
+	         if (threadIsActive) {
+	            
+	            DatagramPacket incoming = new DatagramPacket(buffer, buffer.length);
+
+	            try {
+	               if (useMulticast) {
+	                  multicastSocket.receive(incoming);
+	               } else {
+	                  datagramSocket.receive(incoming);
+	               }
+
+	               propertyChangeSupport.firePropertyChange("datagramReceived", 0, incoming);
+
+	            } catch (IOException e) {
+	               e.printStackTrace();
+	            }
+	         }
+	         
+	         try {
+	            Thread.sleep(50);
+	         } catch (InterruptedException e) { }
+	      }
+	   }
 	}
-
-	public void shutdownReq() {
-
-		shutdown = true;
-	}
-
-	@Override
-	public void run() {
-
-		try {
-			receiveUDPMessage();
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-	}
-}

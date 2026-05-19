@@ -38,7 +38,7 @@ public class ProcessDatagramThread extends Thread implements PropertyChangeListe
 
 	private BlockingQueue<DatagramPacket> queue = new LinkedBlockingQueue<DatagramPacket>();
 	private boolean shutdown = false;
-
+	
 	public void propertyChange(PropertyChangeEvent evt) {
 
 		byte[] buffer = new byte[((DatagramPacket) evt.getNewValue()).getLength()];
@@ -69,19 +69,18 @@ public class ProcessDatagramThread extends Thread implements PropertyChangeListe
 
 		return datagramList;
 	}
-
+	
 	public void shutdownReq() {
 		shutdown = true;
 	}
-
+	
 	public void run() {
 
-		ReceiveDatagramThread receiveDatagramThread = new ReceiveDatagramThread(
-				SharedData.getInstance().xmlMap.get("MulticastIP"),
-				Integer.parseInt(SharedData.getInstance().xmlMap.get("MulticastPort")));
+		ReceiveDatagramThread receiveDatagramThread = new ReceiveDatagramThread();
 
 		receiveDatagramThread.getPropertyChangeSupport().addPropertyChangeListener(this);
 		receiveDatagramThread.start();
+		receiveDatagramThread.setThreadIsActive(true);
 
 		while (!shutdown) {
 

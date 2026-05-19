@@ -43,8 +43,8 @@ import orbisoftware.solaris.server.SharedData;
 public class ClientMain {
 
 	private DatagramSocket socket;
-	private String multicastIP;
-	private int multicastPort;
+	private int portNumber = 0;
+	private boolean useMulticast = false;
 	private InetAddress group;
 	private String fileName = "settings.xml";
 
@@ -61,11 +61,9 @@ public class ClientMain {
 				parseElements(rootElem);
 			}
 
-			// Initiate socket
-			socket = new DatagramSocket();
-			multicastIP = SharedData.getInstance().xmlMap.get("MulticastIP");
-			multicastPort = Integer.parseInt(SharedData.getInstance().xmlMap.get("MulticastPort"));
-			group = InetAddress.getByName(multicastIP);
+			useMulticast = Boolean.parseBoolean(SharedData.getInstance().xmlMap.get("UseMulticast"));
+		    portNumber = Integer.parseInt(SharedData.getInstance().xmlMap.get("PortValue"));
+		      
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -74,11 +72,23 @@ public class ClientMain {
 
 	public void sendUDPMessage(String message) {
 
-		try {
-			byte[] msg = message.getBytes();
-			DatagramPacket packet = new DatagramPacket(msg, msg.length, group, multicastPort);
+		InetAddress ipAddress = null;
 
-			socket.send(packet);
+		try {
+
+			byte[] msg = message.getBytes();
+
+			if (useMulticast)
+				ipAddress = InetAddress.getByName(SharedData.getInstance().xmlMap.get("MulticastAddress"));
+			else
+				ipAddress = InetAddress.getByName(SharedData.getInstance().xmlMap.get("BroadcastAddress"));
+
+			DatagramPacket datagram = new DatagramPacket(msg, msg.length, ipAddress, portNumber);
+
+			if (useMulticast)
+				SharedSocketInterface.getInstance().getMulticastSocket().send(datagram);
+			else
+				SharedSocketInterface.getInstance().getDatagramSocket().send(datagram);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -120,8 +130,28 @@ public class ClientMain {
 	public static void main(String[] args) {
 
 		ClientMain clientMain = new ClientMain();
+		
+	    boolean useMulticast = Boolean.parseBoolean(SharedData.getInstance().xmlMap.get("UseMulticast"));
+	    int portNumber = Integer.parseInt(SharedData.getInstance().xmlMap.get("PortValue"));
+	    String multicastAddress = SharedData.getInstance().xmlMap.get("MulticastAddress");
+        String multicastDeviceAddress = SharedData.getInstance().xmlMap.get("MulticastDeviceAddress");
+        String broadcastAddress = SharedData.getInstance().xmlMap.get("BroadcastAddress");
 		int count = 0;
 
+		// Initalize application socket
+        SharedSocketInterface.getInstance().initSocket();
+          
+        System.out.println("       Listening on port: " + portNumber);
+
+        if (useMulticast) {
+           
+           System.out.println("       Multicast Address: " + multicastAddress);
+           System.out.println("        Multicast Device: " + multicastDeviceAddress);
+        } else {
+           
+           System.out.println("       Broadcast Address: " + broadcastAddress);
+        }
+        
 		while (count < 1) {
 
 			JSONObject jsonObject = new JSONObject();
@@ -150,7 +180,5 @@ public class ClientMain {
 				e.printStackTrace();
 			}
 		}
-
-		clientMain.socket.close();
 	}
 }

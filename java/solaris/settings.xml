@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <settings>
    <setting>
-      <name>MulticastIP</name>
-      <value>231.0.0.0</value>
+      <!-- Use Mutlticast -->
+      <name>UseMulticast</name>
+      <value>true</value>
    </setting>
-    <setting>
-      <name>MulticastPort</name>
-      <value>2345</value>
+   <setting>
+      <!-- Application setting -->
+      <name>MulticastAddress</name>
+      <value>224.0.0.1</value>
+   </setting>
+   <setting>
+      <!-- Application setting -->
+      <name>MulticastDeviceAddress</name>
+      <value>10.10.30.10</value>
+   </setting>
+   <setting>
+      <!-- Application setting -->
+      <name>BroadcastAddress</name>
+      <value>10.10.30.10</value>
+   </setting>
+   <setting>
+      <!-- Application setting -->
+      <name>PortValue</name>
+      <value>3000</value>
    </setting>
 </settings>
