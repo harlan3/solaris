@@ -42,13 +42,14 @@ import orbisoftware.solaris.server.SharedData;
 
 public class ClientMain {
 
-	private DatagramSocket socket;
 	private int portNumber = 0;
 	private boolean useMulticast = false;
-	private InetAddress group;
 	private String fileName = "settings.xml";
-
-	public ClientMain() {
+    
+	private static ClientMain instance = null;
+	private static NetworkSetup networkSetup = null;
+	
+	private ClientMain() {
 
 		try {
 			// Process XML
@@ -60,7 +61,7 @@ public class ClientMain {
 			if (rootElem != null) {
 				parseElements(rootElem);
 			}
-
+			
 			useMulticast = Boolean.parseBoolean(SharedData.getInstance().xmlMap.get("UseMulticast"));
 		    portNumber = Integer.parseInt(SharedData.getInstance().xmlMap.get("PortValue"));
 		      
@@ -127,30 +128,20 @@ public class ClientMain {
 		}
 	}
 
+	public static ClientMain getInstance() {
+		
+		if (instance == null) {
+			instance = new ClientMain();
+			networkSetup = new NetworkSetup();
+		}
+		return instance;
+	}
+	
 	public static void main(String[] args) {
 
-		ClientMain clientMain = new ClientMain();
+		ClientMain.getInstance();
 		
-	    boolean useMulticast = Boolean.parseBoolean(SharedData.getInstance().xmlMap.get("UseMulticast"));
-	    int portNumber = Integer.parseInt(SharedData.getInstance().xmlMap.get("PortValue"));
-	    String multicastAddress = SharedData.getInstance().xmlMap.get("MulticastAddress");
-        String multicastDeviceAddress = SharedData.getInstance().xmlMap.get("MulticastDeviceAddress");
-        String broadcastAddress = SharedData.getInstance().xmlMap.get("BroadcastAddress");
-		int count = 0;
-
-		// Initalize application socket
-        SharedSocketInterface.getInstance().initSocket();
-          
-        System.out.println("       Listening on port: " + portNumber);
-
-        if (useMulticast) {
-           
-           System.out.println("       Multicast Address: " + multicastAddress);
-           System.out.println("        Multicast Device: " + multicastDeviceAddress);
-        } else {
-           
-           System.out.println("       Broadcast Address: " + broadcastAddress);
-        }
+        int count = 0;
         
 		while (count < 1) {
 
@@ -170,11 +161,11 @@ public class ClientMain {
 			jsonObject.put("humboldt", "This is a string");
 			jsonObject.put("macaroni", base64Bytes);
 
-			clientMain.sendUDPMessage(jsonObject.toString());
+			instance.sendUDPMessage(jsonObject.toString());
 
 			count++;
 			try {
-				Thread.sleep(10);
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

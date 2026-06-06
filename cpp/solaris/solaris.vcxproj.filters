@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="JSONObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="AppConfig.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -41,16 +38,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="JSONObject.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="AppConfig.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="client\Sender.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="server\Receiver.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="server\ServerMain.hpp">
@@ -75,6 +63,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SharedData.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="json.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -30,10 +30,12 @@
 #include <string>
 
 #include "util/Base64.hpp"
-#include "JSONObject.hpp"
 #include "JSONPacket.hpp"
 #include "PublishDatagramThread.hpp"
 #include "SharedData.hpp"
+#include "json.hpp"
+
+using json = nlohmann::json;
 
 using namespace std;
 
@@ -64,7 +66,7 @@ ClientMain::ClientMain()
     SharedData::getInstance()->appConfig.loadXml("config.xml");
 }
 
-int main1(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
 
 #ifdef WIN32
@@ -82,22 +84,22 @@ int main1(int argc, char* argv[])
 
     while (count < 1) 
     {
-        json::JSONObject jsonObject;
+        json jsonObject;
         unsigned char bytes[5] = {0x48, 0x65, 0x6c, 0x6c, 0x6f};
         string base64Bytes = base64_encode(bytes, 5);
 
-        jsonObject.put("eventName", "penguins");
-        jsonObject.put("chatham", (int8_t)123);
-        jsonObject.put("waitaha", (short)12345);
-        jsonObject.put("king", (int) 123456789);
-        jsonObject.put("emperor", (int64_t) 123456789123456789);
-        jsonObject.put("chinstrap", (float) 123.456);
-        jsonObject.put("gentoo", (double) 123456789.123456789);
-        jsonObject.put("magellanic", (bool) true);
-        jsonObject.put("humboldt", "This is a string");
-        jsonObject.put("macaroni", base64Bytes);
+        jsonObject["eventName"] = "penguins";
+        jsonObject["chatham"] = (int8_t) 123;
+        jsonObject["waitaha"] = (short) 12345;
+        jsonObject["king"] = (int) 123456789;
+        jsonObject["emperor"] = (int64_t) 123456789123456789;
+        jsonObject["chinstrap"] = (float) 123.456;
+        jsonObject["gentoo"] = (double) 123456789.123456789;
+        jsonObject["magellanic"] = (bool) true;
+        jsonObject["humboldt"] = "This is a string";
+        jsonObject["macaroni"] = base64Bytes;
         
-        publishDatagramThread.sendJSONString(jsonObject.toString());
+        publishDatagramThread.sendJSONString(jsonObject.dump());
         count++;
     }
 

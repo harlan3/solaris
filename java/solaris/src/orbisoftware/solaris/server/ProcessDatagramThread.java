@@ -80,7 +80,6 @@ public class ProcessDatagramThread extends Thread implements PropertyChangeListe
 
 		receiveDatagramThread.getPropertyChangeSupport().addPropertyChangeListener(this);
 		receiveDatagramThread.start();
-		receiveDatagramThread.setThreadIsActive(true);
 
 		while (!shutdown) {
 

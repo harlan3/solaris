@@ -33,26 +33,24 @@
 
 using namespace std;
 
-class PublishDatagramThread 
+class PublishDatagramThread
 {
 
 public:
 
-    void start();
+	void start();
 
-    void shutdownReq();
+	void shutdownReq();
 
-    void sendJSONString(string jsonString);
+	void sendJSONString(string jsonString);
 
 private:
 
-    void runPublishThread();
+	void runPublishThread();
 
-    boost::asio::io_service io_service_p;
+	boost::thread* publishThread;
+	SharedQueue<JSONPacket> queue;
 
-    boost::thread* publishThread;
-    SharedQueue<JSONPacket> queue;
-
-    bool shutdown;
+	bool shutdown;
 
 };

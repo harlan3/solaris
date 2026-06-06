@@ -116,13 +116,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;WIN32;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Program Files\Boost-1.78\include\boost-1_78;C:\Users\harla\source\repos\solaris\solaris;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\harla\boost_1_82_0;C:\Users\harla\solaris\cpp\solaris;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Program Files\Boost-1.78\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libboost_thread-vc143-mt-gd-x64-1_78.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\harla\boost_1_82_0\stage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -145,7 +145,6 @@
     <ClCompile Include="AppConfig.cpp" />
     <ClCompile Include="client\ClientMain.cpp" />
     <ClCompile Include="client\PublishDatagramThread.cpp" />
-    <ClCompile Include="JSONObject.cpp" />
     <ClCompile Include="server\ReceiveDatagramThread.cpp" />
     <ClCompile Include="server\ServerMain.cpp" />
     <ClCompile Include="SharedData.cpp" />
@@ -155,11 +154,9 @@
     <ClInclude Include="AppConfig.hpp" />
     <ClInclude Include="client\ClientMain.hpp" />
     <ClInclude Include="client\PublishDatagramThread.hpp" />
-    <ClInclude Include="client\Sender.hpp" />
-    <ClInclude Include="JSONObject.hpp" />
+    <ClInclude Include="json.hpp" />
     <ClInclude Include="JSONPacket.hpp" />
     <ClInclude Include="server\ReceiveDatagramThread.hpp" />
-    <ClInclude Include="server\Receiver.hpp" />
     <ClInclude Include="server\ServerMain.hpp" />
     <ClInclude Include="SharedData.hpp" />
     <ClInclude Include="util\Base64.hpp" />

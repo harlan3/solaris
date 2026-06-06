@@ -35,9 +35,11 @@ public:
     void loadXml(const std::string &filename);
 
     std::string getMulticastAddress();
+	std::string getMulticastDeviceAddress();
     int getMulticastPort();
 
 private:
     std::string multicastAddress;
+	std::string multicastDeviceAddress;
     int multicastPort;
 };

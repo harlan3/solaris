@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
-    <multicastAddress>231.0.0.0</multicastAddress>
-    <multicastPort>2345</multicastPort>
+    <multicastAddress>224.0.0.1</multicastAddress>
+    <multicastDeviceAddress>192.168.4.177</multicastDeviceAddress>
+    <multicastPort>8088</multicastPort>
 </config>

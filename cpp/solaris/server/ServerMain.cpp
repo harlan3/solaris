@@ -28,9 +28,11 @@
 #include <boost/thread.hpp>
 
 #include "util/Base64.hpp"
-#include "JSONObject.hpp"
 #include "SharedData.hpp"
 #include "ReceiveDatagramThread.hpp"
+#include "json.hpp"
+
+using json = nlohmann::json;
 
 static bool shutdownRequested = false;
 
@@ -59,7 +61,7 @@ ServerMain::ServerMain()
     SharedData::getInstance()->appConfig.loadXml("config.xml");
 }
 
-int main(int argc, char* argv[])
+int main1(int argc, char* argv[])
 {
 
 #ifdef WIN32
@@ -85,19 +87,19 @@ int main(int argc, char* argv[])
 
             cout << "contents: " << packet.data << endl;
 
-            json::JSONObject jsonObject(packet.data);
+            json jsonObject = json::parse(packet.data);
 
-            cout << "eventName = " << jsonObject.getString("eventName") << endl;
-            cout << "chatham = " << jsonObject.getByte("chatham") << endl;
-            cout << "waitaha = " << jsonObject.getShort("waitaha") << endl;
-            cout << "king = " << jsonObject.getInt("king") << endl;
-            cout << "emperor = " << jsonObject.getLong("emperor") << endl;
-            cout << "chinstrap = " << jsonObject.getFloat("chinstrap") << endl;
-            cout << "gentoo = " << jsonObject.getDouble("gentoo") << endl;
-            cout << "magellanic = " << jsonObject.getBoolean("magellanic") << endl;
-            cout << "humboldt = " << jsonObject.getString("humboldt") << endl;
+            cout << "eventName = " << jsonObject["eventName"] << endl;
+            cout << "chatham = " << jsonObject["chatham"] << endl;
+            cout << "waitaha = " << jsonObject["waitaha"] << endl;
+            cout << "king = " << jsonObject["king"] << endl;
+            cout << "emperor = " << jsonObject["emperor"] << endl;
+            cout << "chinstrap = " << jsonObject["chinstrap"] << endl;
+            cout << "gentoo = " << jsonObject["gentoo"] << endl;
+            cout << "magellanic = " << jsonObject["magellanic"] << endl;
+            cout << "humboldt = " << jsonObject["humboldt"] << endl;
 
-            string decodedBytes = base64_decode(jsonObject.getString("macaroni"));
+            string decodedBytes = base64_decode(jsonObject["macaroni"]);
             cout << "macaroni = " << decodedBytes << endl << endl;
         }
 

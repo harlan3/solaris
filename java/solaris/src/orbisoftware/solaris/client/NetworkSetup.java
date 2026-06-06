@@ -20,28 +20,33 @@
 	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
-*/
-
+ */
 package orbisoftware.solaris.client;
 
-import java.util.HashMap;
+import orbisoftware.solaris.server.SharedData;
 
-public class SharedData {
+public class NetworkSetup {
 
-	public HashMap<String, String> xmlMap;
+	NetworkSetup() {
 
-	private static SharedData instance = null;
+		boolean useMulticast = Boolean.parseBoolean(SharedData.getInstance().xmlMap.get("UseMulticast"));
+		int portNumber = Integer.parseInt(SharedData.getInstance().xmlMap.get("PortValue"));
+		String multicastAddress = SharedData.getInstance().xmlMap.get("MulticastAddress");
+		String multicastDeviceAddress = SharedData.getInstance().xmlMap.get("MulticastDeviceAddress");
+		String broadcastAddress = SharedData.getInstance().xmlMap.get("BroadcastAddress");
 
-	private SharedData() {
-		
-		this.xmlMap = new HashMap<>();
-	}
+		// Initalize application socket
+		SharedSocketInterface.getInstance().initSocket();
 
-	public static SharedData getInstance() {
-		
-		if (instance == null) {
-			instance = new SharedData();
+		System.out.println("       Listening on port: " + portNumber);
+
+		if (useMulticast) {
+
+			System.out.println("       Multicast Address: " + multicastAddress);
+			System.out.println("        Multicast Device: " + multicastDeviceAddress);
+		} else {
+
+			System.out.println("       Broadcast Address: " + broadcastAddress);
 		}
-		return instance;
 	}
 }

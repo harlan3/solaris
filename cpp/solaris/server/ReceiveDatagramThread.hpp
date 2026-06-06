@@ -40,7 +40,9 @@ public:
 
     void start();
 
-    void processRcvCallback(char* data, int numBytes);
+	void handleReceivedData(
+		const std::vector<unsigned char>& data,
+		const int numBytes);
 
     void shutdownReq();
 
@@ -50,7 +52,7 @@ private:
 
     void runReceiveThread();
 
-    boost::asio::io_service io_service_r;
+	boost::asio::ip::udp::socket* socketPtr = nullptr;
 
     boost::thread* receiveThread;
     SharedQueue<JSONPacket> queue;

@@ -23,7 +23,6 @@
 */
 
 #include "ReceiveDatagramThread.hpp"
-#include "Receiver.hpp"
 #include "SharedData.hpp"
 
 #include <iostream>
@@ -37,29 +36,114 @@ void ReceiveDatagramThread::start()
         boost::bind(&ReceiveDatagramThread::runReceiveThread, this));
 }
 
-void ReceiveDatagramThread::runReceiveThread() 
+void ReceiveDatagramThread::runReceiveThread()
 {
+    try
+    {
+        // Setup the I/O context required by all Asio programs
+        boost::asio::io_context io_ctx;
 
-    Receiver receiver(io_service_r,
-        boost::asio::ip::address::from_string("0.0.0.0"),
-        boost::asio::ip::address::from_string(
-            SharedData::getInstance()->appConfig.getMulticastAddress()),
-            SharedData::getInstance()->appConfig.getMulticastPort());
-    receiver.setCallback(
-        boost::bind(&ReceiveDatagramThread::processRcvCallback, this, _1, _2));
-    io_service_r.run();
+        // Define receive port
+        const unsigned short port =
+            SharedData::getInstance()->appConfig.getMulticastPort();
 
-    while (!shutdown) {
+        // Create the addresses
+        boost::asio::ip::address_v4 interface_address =
+            boost::asio::ip::address_v4::from_string(
+                SharedData::getInstance()->appConfig.getMulticastDeviceAddress()
+            );
 
-        boost::this_thread::sleep(boost::posix_time::seconds(1));
+        boost::asio::ip::address_v4 multicast_address =
+            boost::asio::ip::address_v4::from_string(
+                SharedData::getInstance()->appConfig.getMulticastAddress()
+            );
+
+        // Create local listen endpoint.
+        // For multicast receivers, bind to 0.0.0.0:port or the interface address.
+        boost::asio::ip::udp::endpoint listen_endpoint(
+            boost::asio::ip::udp::v4(),
+            port
+        );
+
+        // Open the IPv4 UDP socket
+        boost::asio::ip::udp::socket socket(io_ctx);
+        socketPtr = &socket;
+
+        socket.open(boost::asio::ip::udp::v4());
+
+        // Allow multiple apps/sockets to bind to the same multicast port
+        socket.set_option(boost::asio::ip::udp::socket::reuse_address(true));
+
+        // Bind socket to the multicast receive port
+        socket.bind(listen_endpoint);
+
+        // Join the multicast group on the specific network interface
+        socket.set_option(
+            boost::asio::ip::multicast::join_group(
+                multicast_address,
+                interface_address
+            )
+        );
+
+        std::array<unsigned char, 1500> receiveBuffer;
+
+        while (!shutdown) {
+
+                boost::asio::ip::udp::endpoint senderEndpoint;
+                boost::system::error_code ec;
+
+                std::size_t bytesReceived =
+                    socket.receive_from(
+                        boost::asio::buffer(receiveBuffer),
+                        senderEndpoint,
+                        0,
+                        ec
+                    );
+
+                if (shutdown)
+                    break;
+
+                if (ec)
+                {
+                    if (ec == boost::asio::error::operation_aborted)
+                        break;
+
+                    std::cerr << "Multicast receive error: "
+                        << ec.message()
+                        << std::endl;
+
+                    continue;
+                }
+
+                std::vector<unsigned char> data(
+                    receiveBuffer.begin(),
+                    receiveBuffer.begin() + bytesReceived
+                );
+
+                handleReceivedData(data, data.size());
+            }
+
+            boost::system::error_code ec;
+            socket.close(ec);
+            socketPtr = nullptr;
+        }
+    catch (const std::exception& ex)
+    {
+        std::cerr << "ServerReceiveSocketThread exception: "
+            << ex.what()
+            << std::endl;
     }
 }
 
-void ReceiveDatagramThread::processRcvCallback(char* data, int numBytes) 
+
+void ReceiveDatagramThread::handleReceivedData(
+    const std::vector<unsigned char>&data,
+    const int numBytes)
 {
 
     JSONPacket packet;
-    memcpy(packet.data, data, numBytes);
+
+    memcpy(packet.data, data.data(), numBytes);
     packet.data[numBytes] = 0;
     packet.length = numBytes+1;
 

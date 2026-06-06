@@ -23,6 +23,6 @@
    <setting>
       <!-- Application setting -->
       <name>PortValue</name>
-      <value>3000</value>
+      <value>8088</value>
    </setting>
 </settings>

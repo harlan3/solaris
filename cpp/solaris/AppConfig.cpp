@@ -37,14 +37,21 @@ void AppConfig::loadXml(const std::string &filename)
     boost::property_tree::ptree tree;
     boost::property_tree::read_xml(filename, tree);
 
-    multicastAddress = tree.get<std::string>("config.multicastAddress");
-    multicastPort = tree.get<int>("config.multicastPort");
+	multicastAddress = tree.get<std::string>("config.multicastAddress");
+	multicastDeviceAddress = tree.get<std::string>("config.multicastDeviceAddress");
+	multicastPort = tree.get<int>("config.multicastPort");
 }
 
 std::string AppConfig::getMulticastAddress()
 {
 
     return multicastAddress;
+}
+
+std::string AppConfig::getMulticastDeviceAddress()
+{
+
+	return multicastDeviceAddress;
 }
 
 int AppConfig::getMulticastPort() 
