@@ -30,8 +30,6 @@ import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 
-import orbisoftware.solaris.server.SharedData;
-
 public class SharedSocketInterface {
 
    private static SharedSocketInterface instance = null;

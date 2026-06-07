@@ -23,8 +23,6 @@
  */
 package orbisoftware.solaris.client;
 
-import orbisoftware.solaris.server.SharedData;
-
 public class NetworkSetup {
 
 	NetworkSetup() {

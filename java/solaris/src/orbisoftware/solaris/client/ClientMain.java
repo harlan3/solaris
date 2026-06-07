@@ -25,7 +25,6 @@
 package orbisoftware.solaris.client;
 
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Base64;
 
@@ -37,8 +36,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import orbisoftware.solaris.server.SharedData;
 
 public class ClientMain {
 
